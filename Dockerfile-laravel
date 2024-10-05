@@ -18,7 +18,9 @@ RUN apt-get update && apt-get install -y \
     libxpm-dev \
     libwebp-dev \
     libonig-dev \
-    libicu-dev # Añadido para la extensión intl
+    libicu-dev \
+    python3 \
+    python3-pip
 
 # Instalar extensiones de PHP
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -26,6 +28,9 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 
 # Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Instalar youtube-dl
+RUN pip3 install youtube-dl
 
 # Crear directorio de trabajo
 WORKDIR /var/www

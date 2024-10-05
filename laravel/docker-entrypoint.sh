@@ -10,5 +10,11 @@ if [ ! -d "node_modules" ]; then
     npm install
 fi
 
+# Crear el directorio de descargas y hacer el enlace simbólico
+if [ ! -d "storage/app/public/downloads" ]; then
+    mkdir -p storage/app/public/downloads
+    php artisan storage:link
+fi
+
 # Ejecutar el comando predeterminado
 exec "$@"
