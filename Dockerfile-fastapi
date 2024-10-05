@@ -1,0 +1,20 @@
+FROM python:3.9-slim
+
+# Instalar dependencias del sistema
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    ffmpeg
+
+# Crear directorio de trabajo
+WORKDIR /app
+
+# Copiar y instalar dependencias
+COPY ./fastapi/requirements.txt /app/requirements.txt
+RUN pip install --upgrade pip && pip install -r /app/requirements.txt
+
+# Copiar la aplicación FastAPI
+COPY ./fastapi /app
+
+# Ejecutar el comando FastAPI con tiempos de espera extendidos
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7000", "--reload", "--timeout-keep-alive", "10800"]
