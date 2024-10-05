@@ -1,5 +1,4 @@
-version: '3.8'
-name: descargar_de_youtube
+version: '3.3'
 
 services:
   laravel:
