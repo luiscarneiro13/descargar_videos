@@ -16,5 +16,8 @@ if [ ! -d "storage/app/public/downloads" ]; then
     php artisan storage:link
 fi
 
+cd /var/www
+php artisan optimize:clear 
+
 # Ejecutar el comando predeterminado
 exec "$@"

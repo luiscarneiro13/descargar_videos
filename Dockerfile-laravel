@@ -44,10 +44,13 @@ WORKDIR /var/www
 COPY ./laravel/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
+# Copiar el archivo php.ini personalizado para configurar el límite de memoria
+COPY ./laravel/php.ini /usr/local/bin/php/
+
 # Variables de entorno para producción
 ENV APP_ENV=production
 ENV APP_DEBUG=false
 
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+ENTRYPOINT ["./laravel/docker-entrypoint.sh"]
 
 CMD ["php-fpm"]
