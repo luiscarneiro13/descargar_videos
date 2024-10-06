@@ -1,53 +1,20 @@
-FROM php:8.1-fpm
+FROM python:3.9-slim
 
 # Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
     build-essential \
-    libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
-    locales \
-    zip \
-    jpegoptim optipng pngquant gifsicle \
-    vim \
-    unzip \
-    git \
-    curl \
-    libzip-dev \
-    libjpeg-dev \
-    libxpm-dev \
-    libwebp-dev \
-    libonig-dev \
-    libicu-dev \
-    python3 \
-    python3-pip \
-    python3-venv
-
-# Crear y activar un entorno virtual
-RUN python3 -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-
-# Instalar youtube-dl en el entorno virtual
-RUN /opt/venv/bin/pip install --break-system-packages youtube-dl
-
-# Instalar extensiones de PHP
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl
-
-# Instalar Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+    libpq-dev \
+    ffmpeg
 
 # Crear directorio de trabajo
-WORKDIR /var/www
+WORKDIR /app
 
-# Copiar y configurar scripts de inicio
-COPY laravel/docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+# Copiar y instalar dependencias
+COPY ./fastapi/requirements.txt /app/requirements.txt
+RUN pip install --upgrade pip && pip install -r /app/requirements.txt
 
-# Variables de entorno para producción
-ENV APP_ENV=production
-ENV APP_DEBUG=false
+# Copiar la aplicación FastAPI
+COPY ./fastapi /app
 
-ENTRYPOINT ["docker-entrypoint.sh"]
-
-CMD ["php-fpm"]
+# Ejecutar el comando FastAPI con tiempos de espera extendidos
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7000", "--reload", "--timeout-keep-alive", "10800"]
